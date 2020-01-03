@@ -1,0 +1,173 @@
+<html>
+	
+	<head>
+		
+	    <!-- Required meta tags -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	
+	</head>
+	
+	<style>
+		#teste {
+			display: flex;
+			justify-content: center;
+		}
+		#myform{
+			margin: 15px
+		}
+	</style>
+
+	<body onload="teste()">
+	
+		<nav class="navbar navbar-expand-lg navbar-light bg-light">
+			<a class="navbar-brand">GusCart</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<ul class="navbar-nav mr-auto">
+				  <li class="nav-item">
+					<a class="nav-link" href="#">Enviar</a>
+				  </li>
+				  <li class="nav-item">
+					<a class="nav-link" href="http://localhost:3000/ler">Ver</a>
+				  </li>
+			</div>
+		</nav>
+		
+		<form id = "myForm" onsubmit="myfunc(); return false" method="POST">
+		  <div class="form-row">
+			<div class="form-group col-md-3">
+			  <label for="inputEmail4">Matricula</label>
+			  <input value="" name="matric" type="text" class="form-control">
+			</div>
+			<div class="form-group col-md-3">
+			  <label for="inputPassword4">Data</label>
+			  <input value="" name="data" type="date" class="form-control" >
+			</div>
+			<div class="form-group col-md-3">
+			  <label for="inputPassword4">Sequencia</label>
+			  <input value="" name="seq" type="text" class="form-control">
+			</div>
+			<div class="form-group col-md-3">
+			  <label for="inputPassword4">Protocolo</label>
+			  <input value="" name="protocolo" type="text" class="form-control">
+			</div>
+		  </div>
+		  <div class="form-row">
+			<div class="form-group col-md-4">
+			  <label for="inputEmail4">Nome</label>
+			  <input value="" name="nome" type="text" class="form-control" >
+			</div>
+			<div class="form-group col-md-4">
+			  <label for="inputPassword4">CPF</label>
+			  <input value="" name="cpf" type="text" class="form-control" >
+			</div>
+			<div class="form-group col-md-4">
+			  <label for="inputPassword4">RG</label>
+			  <input value="" name="rg" type="text" class="form-control">
+			</div>
+		  </div>
+		  <div class="form-row">
+			<div class="form-group col-md-3">
+			  <label for="">Situação</label>
+			  <input list="situ" value="" name="situacao" type="text" class="form-control" id="inputEmail4">
+			</div>
+			
+			<datalist id="situ">
+			</datalist>
+			
+			<div class="form-group col-md-3">
+			  <label for="">Profissão</label>
+			  <input list="profi" value="" name="profissao" type="text" class="form-control" id="prof">
+			</div>
+			
+			<datalist id="profi">
+			</datalist>
+			
+			<div class="form-group col-md-3">
+			  <label for="">Nacionalidade</label>
+			  <input list="naci" value="" name="nacional" type="text" class="form-control" id="nacional">
+			</div>
+			
+			<datalist id="naci">
+			</datalist>
+			
+			<div class="form-group col-md-3">
+			  <label for="">Estado Civil</label>
+			  <input list="est" value="" name="civil" type="text" class="form-control" id="civil">
+			</div>
+			
+			<datalist id="est">
+			</datalist>
+		  </div>
+			<button class="btn btn-primary" type="submit">
+				Enviar
+			</button>
+		</form>
+		
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js" >
+		</script>
+				
+		<script>
+		
+			function teste(){
+				axios.get('http://localhost:3000/db/sit')
+				.then(data =>{
+					situ = document.getElementById('situ')
+					prof = document.getElementById('profi')
+					civil = document.getElementById('est')
+					nacional = document.getElementById('naci')
+					for (dados of data.data){
+						for( dado in dados ){
+							if(dados[dado].situacao != undefined){
+								opt = document.createElement('option')
+								opt.setAttribute('value', dados[dado].situacao)
+								situ.appendChild(opt)
+							}else if(dados[dado].profissao != undefined){
+								opt2 = document.createElement('option')
+								opt2.setAttribute('value', dados[dado].profissao)
+								prof.appendChild(opt2)
+							}else if(dados[dado].est_civ != undefined){
+								opt3 = document.createElement('option')
+								opt3.setAttribute('value', dados[dado].est_civ)
+								civil.appendChild(opt3)
+							}
+						}
+					}
+				})	
+			}
+			
+			function myfunc(){
+				myform = document.getElementById('myForm')
+				formdata = new FormData(myform)
+				obj = {
+					matric: formdata.get('matric'), 
+					data:formdata.get('data'),
+					seq:formdata.get('seq'), 
+					protocolo:formdata.get('protocolo'), 
+					nome:formdata.get('nome'),
+					cpf:formdata.get('cpf'), 
+					rg:formdata.get('rg'),
+					situacao:formdata.get('situacao'),
+					profissao:formdata.get('profissao'),
+					nacional:formdata.get('nacional'),
+					civil:formdata.get('civil')			
+				}
+				console.log(obj)
+				axios.post('http://localhost:3000/db', obj)
+			}
+		</script>
+
+		<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+		
+	</body>
+
+</html>

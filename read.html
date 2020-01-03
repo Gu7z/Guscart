@@ -1,0 +1,159 @@
+<html>
+	
+	<head>
+		
+	    <!-- Required meta tags -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	</head>
+	
+	<style>
+		#teste {
+			display: flex;
+			justify-content: center
+		}
+		#teste2 {
+			justify-content: center
+		}
+		.col-md-3{
+			padding-left: 0;
+			padding-right: 0
+		}
+		#box{
+			width: 100px;
+			height: 30px;
+		}
+	</style>
+
+	<body>
+	
+		<nav class="navbar navbar-expand-lg navbar-light bg-light">
+			<a class="navbar-brand">GusCart</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<ul class="navbar-nav mr-auto">
+				  <li class="nav-item">
+					<a class="nav-link" href="http://localhost:3000/">Enviar</a>
+				  </li>
+				  <li class="nav-item">
+					<a class="nav-link" href="#">Ver</a>
+				  </li>
+			</div>
+		</nav>
+
+		<div id="teste">
+			<form onsubmit="myfunc(); return false" id = "myForm">
+				<div class="form-group col-md-3">
+				  <label for="matricula">Matricula</label>
+				  <input id="box" name="matric" type="text" class="form-control">
+				</div>
+			</form>	
+		</div>		
+
+		
+		<table id="table" class="table">
+			<thead>
+				<tr>
+					<th scope="col">Nome</th>
+					<th scope="col">CPF</th>
+					<th scope="col">RG</th>
+					<th scope="col">Situação</th>
+					<th scope="col">Sequencia</th>
+					<th scope="col">Protocolo</th>
+					<th scope="col">Data</th>
+					<th scope="col">Editar</th>
+				</tr>
+			</thead>
+		</table>	
+	
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js" >
+		</script>
+
+		<script>
+			
+			function edit(id){
+				pessoa = document.getElementById(id)
+				obj = []
+				value = ''
+				for (let i = 0; i < pessoa.childElementCount-1; i++){
+					if (pessoa.children[i].innerText != ''){
+						value = pessoa.children[i].innerText
+					}else{
+						value = ' '
+					}
+					input = `<input value='${value}' type="text" class="form-control form">`
+					pessoa.children[i].innerHTML = input
+				}
+				pessoa.children[pessoa.childElementCount-1].innerHTML = '<button class="btn btn-primary" type="" onClick="sub(this)"> Enviar </button>'
+			}
+			
+			function sub(){
+				ele = document.getElementsByClassName('form')
+				obj = {}
+				for (elements of ele){
+					obj[elements.parentNode.className] = `${elements.value}`
+				}
+				obj['recno'] = elements.parentNode.parentNode.id
+				axios.post('http://localhost:3000/db/matric/change', obj).then(
+					myfunc()
+				)
+			}
+		
+			function myfunc(){
+				axios.post('http://localhost:3000/db/matric', { matric: `${document.getElementById('myForm').matric.value}`}).then(
+					result => {
+					tabela = document.getElementById('table')
+					if (document.getElementById('corpo')){
+						ele = document.getElementById('corpo')
+						tabela.removeChild(ele)
+					}
+					tbody  = document.createElement('tbody')
+					tbody.setAttribute('id', 'corpo')
+					
+					for (pessoas of result.data){
+						let retro = false
+						if(pessoas.dtinclusaoretro != null){
+							pessoas.dtinclusaoretro = pessoas.dtinclusaoretro.substring(0,10)	
+							retro = true
+						}
+						pessoa = document.createElement('tr')
+						pessoa.setAttribute('id', pessoas.recno)
+							
+						for (dados in pessoas){
+							if(dados != 'recno'){	
+								dado = document.createElement('th')
+								dado.setAttribute('class', dados)
+								dado.innerText = pessoas[dados]
+								pessoa.appendChild(dado)
+							}
+						}
+						
+						timg = document.createElement('th')
+						img = document.createElement('img')
+						img.setAttribute('src', 'https://cdnjs.cloudflare.com/ajax/libs/octicons/8.5.0/svg/pencil.svg')
+						img.setAttribute('onClick', `edit(${pessoas.recno})`)
+						img.style.cursor = 'pointer'
+						timg.appendChild(img)
+						
+						pessoa.appendChild(timg)
+						tbody.appendChild(pessoa)
+					}
+					
+					tabela.appendChild(tbody)
+				})
+			}
+		</script>
+		
+		<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+		
+	</body>
+
+</html>
